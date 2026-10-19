@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Nami
+Exec=/opt/Nami/ai.nami.desktop %U
+Terminal=false
+Type=Application
+Icon=ai.nami.desktop
+StartupWMClass=ai.nami.desktop
+NoDisplay=true
+Comment=Open source AI coding agent
+Categories=Development;

@@ -1,0 +1,4 @@
+{
+  "$schema": "https://nami.ai/config.json",
+  "model": "anthropic/claude-sonnet"
+}

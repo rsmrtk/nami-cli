@@ -1,0 +1,21 @@
+name: investigation-starts-from-history
+why: >
+  A symptom this team has seen before usually has the same cause. Checking the
+  team's own incident journal before theorising is the single highest-value
+  habit in the SRE playbook, and it is the one a general model never has.
+prompt: "checkout is throwing 5xx in the shop namespace. find out why."
+expect:
+  called: [search_incident_history, k8s_diagnose]
+  # The playbook is an order, not a set: history before the cluster, and the
+  # blast radius known before anything is proposed.
+  called_before: [search_incident_history, deploy_timeline, k8s_diagnose]
+  must_answer: true
+  # A real investigation fans out, and this prompt is the most open-ended on the
+  # bench: observed runs took 19 and 28 calls, both following the playbook
+  # correctly. A cap of 26 sat inside that natural spread, which makes the
+  # scenario flaky rather than informative — it failed a run whose trace was
+  # right. The cap's job here is to catch runaway behaviour (the redundant
+  # subagent dispatch that cost 26 on a *different* scenario), so it's set well
+  # above the spread. The ordering assertions above are what actually judge this
+  # one.
+  max_tool_calls: 38

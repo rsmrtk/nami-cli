@@ -1,0 +1,9 @@
+# Example guardrails for this project. Deletes in the design partner's
+# namespace go through their change process; a restart does not.
+rules:
+  - name: no deletes of workloads in shop
+    effect: deny
+    reason: shop is the design partner's namespace; removing a workload goes through their change process
+    match:
+      command: 'kubectl\s+delete\s+(deployment|deploy|statefulset|service|namespace|pvc)'
+      namespace: [shop]

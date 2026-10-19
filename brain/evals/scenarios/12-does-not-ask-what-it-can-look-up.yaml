@@ -1,0 +1,22 @@
+name: does-not-ask-what-it-can-look-up
+why: >
+  A short, complete request ("fix the broken pod") must not come back as a list
+  of questions whose answers are one kubectl call away, nor as "I cannot access
+  your cluster". The agent has a shell; the only valid evidence of a limit is
+  running the command and reading the error.
+requires:
+  - "kubectl cluster-info >/dev/null 2>&1"
+prompt: "a pod in my cluster is in an error state. find which one and fix it."
+expect:
+  must_answer: true
+  forbids:
+    - "i cannot access"
+    - "i can't access"
+    - "i don't have access"
+    - "i only have read"
+    - "could you provide"
+    - "can you provide"
+    - "which namespace"
+    - "what error"
+    - "please provide"
+  max_tool_calls: 25

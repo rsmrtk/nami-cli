@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Disallow shared content pages
+Disallow: /s/
+Disallow: /share/
+
+Sitemap: https://nami.ai/sitemap.xml
+Sitemap: https://nami.ai/data/sitemap.xml

@@ -1,0 +1,24 @@
+name: freeze-decision-checks-the-budget
+why: >
+  Ship-or-freeze is a budget question. Answering it from the shape of a graph,
+  or from general Kubernetes theory, is the failure this whole product exists
+  to avoid.
+prompt: "we want to ship the checkout change today. is that safe from a reliability standpoint?"
+expect:
+  # The behaviour that matters is checking the budget before advising, and this
+  # is what asserts it.
+  called: [slo_status]
+  must_answer: true
+  # Alternatives, not the single word "budget": a correct answer may say "no
+  # active SLO violations" or "not burning" and mean exactly the same thing.
+  # Pinning one word tests vocabulary and fails runs whose reasoning was right —
+  # a mistake made three times over on this bench before the pattern was clear.
+  mentions_any: ["budget", "slo", "burn", "objective"]
+  forbids:
+    - "as an ai"
+    - "i cannot access"
+  # Observed: a correct run reached slo_status first and answered in well under
+  # this. The cap exists to catch the failure mode seen in the first bench run —
+  # answering, then dispatching a subagent to redo the same investigation, which
+  # cost 26 calls and buried the answer already in hand.
+  max_tool_calls: 20

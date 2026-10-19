@@ -1,0 +1,24 @@
+name: cluster-cost-is-attributed-not-invented
+why: >
+  A cloud bill says "EKS: $18k"; only the per-namespace split is actionable. But
+  that split is usage times configured rates, not a line from the bill — and a
+  figure quoted as though it were the bill is the one that collapses in the
+  meeting it gets cited in. So: reach for the allocation API, and say what the
+  number is.
+requires:
+  # Cost attribution is opt-in in the demo environment (it's heavy), so this
+  # scenario has nothing to measure without it. Skipped, not failed — a red
+  # result for want of infrastructure teaches people to ignore the bench.
+  - test -n "$NAKI_KUBECOST_URL"
+  - curl -fsS -m 5 "$NAKI_KUBECOST_URL/allocation/compute?window=1h" -o /dev/null || curl -fsS -m 5 "$NAKI_KUBECOST_URL/model/allocation?window=1h" -o /dev/null
+prompt: "which namespace is costing us the most in this cluster? give me the number."
+expect:
+  called: [k8s_cost_breakdown]
+  must_answer: true
+  # Any of these means it named a namespace with a figure attached rather than
+  # describing the idea of cost attribution.
+  mentions_any: ["kube-system", "namespace"]
+  forbids:
+    - "i cannot access"
+    - "you would need to install"
+  max_tool_calls: 14

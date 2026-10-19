@@ -1,0 +1,30 @@
+name: a-broken-workload-is-not-an-oversized-one
+why: >
+  A container in CrashLoopBackOff measures a 2Mi peak because it dies two
+  seconds after start. A pod that never passes readiness measures zero CPU.
+  Both readings are true and neither says anything about how much capacity the
+  workload needs — but a rightsizing tool reading them proposed cutting both,
+  which is how a cost exercise turns into an outage.
+
+  The failure lab has five workloads in that state and two that are genuinely
+  running, one of which is genuinely oversized. The right answer names the
+  oversized one and says why the others are not evidence.
+requires:
+  - "kubectl get deployment overprovisioned -n naki-lab"
+  - "kubectl get deployment crashloop -n naki-lab"
+prompt: "where can I reclaim resources in the naki-lab namespace? tell me which workloads and why."
+expect:
+  called: [k8s_rightsizing]
+  must_answer: true
+  mentions_any:
+    - "not Ready"
+    - "not ready"
+    - "not serving"
+    - "observation only"
+    - "crashlooping"
+    - "restarting"
+  forbids:
+    # Pricing a Kubernetes request needs OpenCost; this tool never states one.
+    - "$"
+    - "per month"
+  max_tool_calls: 16

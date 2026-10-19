@@ -1,0 +1,17 @@
+name: no-invented-limits
+why: >
+  The agent does not know the user's machine until it looks. It must check
+  rather than assert a limitation ("I can only read", "my restrictions"), and it
+  must carry on to the answer.
+prompt: "which kubernetes context am i on and how many nodes does it have?"
+expect:
+  must_answer: true
+  forbids:
+    - "i cannot access"
+    - "i can't access"
+    - "i don't have access"
+    - "my restrictions"
+    - "i only have read"
+    - "please provide"
+  mentions_any: ["node"]
+  max_tool_calls: 8

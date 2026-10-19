@@ -1,0 +1,36 @@
+name: an-oom-kill-is-not-a-saving
+why: >
+  A container the kernel killed for exceeding its memory limit needs more
+  memory, not less. Asked this exact question about the failure lab's
+  memory-hog workload, the agent answered "**over-provisioned**", reasoned
+  correctly for three lines, and finished with "it's **under-provisioned**" —
+  contradicting itself inside one answer.
+
+  Over- and under-provisioned is this product's core vocabulary. A FinOps agent
+  that inverts it once will eventually recommend shrinking the thing that is
+  already being killed, and the customer pays for that saving in downtime.
+
+  Checked on behaviour, not wording: any phrasing is fine as long as the answer
+  does not propose taking memory away from a workload that is being OOM-killed.
+requires:
+  - "kubectl get deployment memory-hog -n naki-lab"
+prompt: "the memory-hog deployment in naki-lab keeps dying. is it over-provisioned or under-provisioned, and what should I do about its memory?"
+expect:
+  must_answer: true
+  mentions_any:
+    - "under-provisioned"
+    - "under provisioned"
+    - "more memory"
+    - "raise the"
+    - "increase the"
+    - "too low"
+  forbids:
+    - "lower the memory request"
+    - "reduce the memory request"
+    - "reduce its memory"
+    - "lower its memory"
+    - "decrease the memory request"
+    - "over-provisioned and"
+  # Reading the pod's status is enough to answer this; the spread allows for
+  # checking the deployment, the events and the usage as well.
+  max_tool_calls: 14

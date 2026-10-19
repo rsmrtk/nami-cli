@@ -1,0 +1,28 @@
+services:
+  checkout:
+    depends_on:
+      - orders-db
+    discovered: true
+    kind: deployment
+    namespace: shop
+    owner: payments-team
+    replicas: 2
+  coredns:
+    depends_on: []
+    discovered: true
+    kind: deployment
+    namespace: kube-system
+    replicas: 2
+  local-path-provisioner:
+    depends_on: []
+    discovered: true
+    kind: deployment
+    namespace: local-path-storage
+    replicas: 1
+  orders-db:
+    depends_on: []
+    discovered: true
+    kind: deployment
+    namespace: shop
+    owner: platform-team
+    replicas: 1

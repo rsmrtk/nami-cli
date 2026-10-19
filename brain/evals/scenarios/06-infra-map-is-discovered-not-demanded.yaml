@@ -1,0 +1,23 @@
+name: infra-map-is-discovered-not-demanded
+why: >
+  When the dependency map is empty, naki can build it from the live cluster.
+  Telling the user to go write a YAML file by hand is the answer of a tool that
+  doesn't know what it has.
+setup:
+  # Without this the repo's own map answers the question and the scenario
+  # passes without ever testing discovery — a false pass, which is worse than
+  # a failure because it reads as evidence.
+  - mkdir -p .naki
+  - test ! -f .naki/infra-map.yaml || mv .naki/infra-map.yaml .naki/infra-map.yaml.eval-backup
+teardown:
+  # Runs even if the scenario crashes. A bench that leaves the project changed
+  # is a bench people stop running.
+  - test ! -f .naki/infra-map.yaml.eval-backup || mv -f .naki/infra-map.yaml.eval-backup .naki/infra-map.yaml
+prompt: "what depends on orders-db? I don't think anyone has written the dependency map yet."
+expect:
+  called: [discover_infra]
+  must_answer: true
+  forbids:
+    - "please create"
+    - "you need to write"
+  max_tool_calls: 14
